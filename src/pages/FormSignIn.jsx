@@ -1,4 +1,39 @@
+/* eslint-disable no-undef */
+import { useState } from "react";
+import axios from "axios";
+
 export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let data = JSON.stringify({
+      email: email,
+      password: password,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:3000/users/signin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log("Response data:", response.data);
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
+  };
+
   return (
     <div className="bg-white h-screen w-screen flex items-center">
       <div className="h-max mx-auto flex flex-col items-center">
@@ -19,6 +54,8 @@ export default function SignIn() {
               type="email"
               name="email"
               placeholder="mehedi@jaman.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -34,6 +71,8 @@ export default function SignIn() {
               type="password"
               name="password"
               placeholder="******"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -53,24 +92,14 @@ export default function SignIn() {
               className="bg-[#4F46E5] w-full py-2 rounded-md text-white font-bold cursor-pointer hover:bg-[#181196]"
               type="submit"
               value="Login"
+              onClick={handleSubmit}
             />
-          </div>
-          <div>
-            <p className="text-center">Or continue with</p>
-          </div>
-          <div className="flex gap-4">
-            <button className="bg-[#1D9BF0] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#181196]">
-              Twitter
-            </button>
-            <button className="bg-[#24292F] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#181196]">
-              Github
-            </button>
           </div>
         </div>
         <p className="text-sm text-gray-500 mt-10">
           Not a member?{" "}
           <a href="#" className="text-[#4F46E5] font-bold">
-            Start a 14 day free trial
+            Sign Up
           </a>
         </p>
       </div>

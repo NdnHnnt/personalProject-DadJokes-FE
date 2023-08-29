@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../provider/authProvider";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const SignIn = () => {
-  const { setToken } = useAuth();
+const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState(null); // Add this state for the response data
 
   useEffect(() => {
     if (successAlert || errorAlert) {
@@ -22,42 +21,44 @@ const SignIn = () => {
       return () => clearTimeout(timer);
     }
   }, [successAlert, errorAlert]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let data = JSON.stringify({
+    const data = JSON.stringify({
       email: email,
+      username: username,
       password: password,
     });
 
-    let config = {
+    const config = {
       method: "post",
-      maxBodyLength: Infinity,
-      url: "http://localhost:3000/users/signin",
+      url: "http://localhost:3000/users/signup",
       headers: {
         "Content-Type": "application/json",
       },
       data: data,
     };
 
+    const handleNavigate = () => {
+      navigate("/signin", { replace: true });
+    };
+
     try {
       const response = await axios.request(config);
-      console.log(response.data);
+      console.log(JSON.stringify(response.data));
       setResponse(response.data);
       setSuccessAlert(true);
       setErrorAlert(false);
-      handleLogin(response.data.token);
+      setTimeout(() => {
+        handleNavigate();
+      }, 3 * 1000);
     } catch (error) {
       console.log(error);
       setErrorAlert(true);
       setSuccessAlert(false);
-      setResponse(error.response.data)
+      setResponse(error.response.data); // Store the API error response
     }
-  };
-
-  const handleLogin = (token) => {
-    setToken(token);
-    navigate("/", { replace: true });
   };
 
   return (
@@ -92,9 +93,25 @@ const SignIn = () => {
                 className="border border-gray-400 focus:outline-slate-400 rounded-md w-full shadow-sm px-5 py-2"
                 type="email"
                 name="email"
-                placeholder="mehedi@jaman.com"
+                placeholder="yourmail@mail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label
+                className="text-gray-600 font-bold inline-block pb-2"
+                htmlFor="username"
+              >
+                Username
+              </label>
+              <input
+                className="border border-gray-400 focus:outline-slate-400 rounded-md w-full shadow-sm px-5 py-2"
+                name="username"
+                placeholder="Nama Pengguna"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -130,15 +147,15 @@ const SignIn = () => {
               <input
                 className="bg-yellow w-full py-2 rounded-md text-white font-bold cursor-pointer hover:bg-turqoise"
                 type="submit"
-                value="Login"
+                value="Sign Up"
                 onClick={handleSubmit}
               />
             </div>
           </div>
           <p className="text-sm text-gray-500 mt-10">
-            Not a member?{" "}
-            <a href="/signup" className="text-darkblue font-bold">
-              Sign Up
+            Have an account?{" "}
+            <a href="/signin" className="text-darkblue font-bold">
+              Sign In
             </a>
           </p>
         </div>
@@ -147,4 +164,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

@@ -5,6 +5,7 @@ import SignIn from "../pages/FormSignIn";
 import Logout from "../pages/FormLogout";
 import LandingPage from "../pages/LandingPage";
 import Dashboard from "../pages/Home";
+import SignUp from "../pages/FormSignUp";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -18,6 +19,10 @@ const Routes = () => {
     {
       path: "/signin",
       element: <SignIn />,
+    },
+    {
+      path: "/signup",
+      element: <SignUp />,
     },
   ];
 
@@ -35,10 +40,6 @@ const Routes = () => {
           path: "/logout",
           element: <Logout />,
         },
-        {
-          path: "/signin",
-          redirect: "/",
-        },
       ],
     },
   ];
@@ -52,6 +53,10 @@ const Routes = () => {
     {
       path: "/signin",
       element: <SignIn />,
+    },
+    {
+      path: "/signup",
+      element: <SignUp />,
     },
   ];
 

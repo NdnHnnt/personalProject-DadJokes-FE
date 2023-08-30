@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import SignIn from "../pages/FormSignIn";
 import Logout from "../pages/FormLogout";
 import LandingPage from "../pages/LandingPage";
-import Dashboard from "../pages/Home";
+import Dashboard from "../pages/HomeProtected";
 import SignUp from "../pages/FormSignUp";
 
 const Routes = () => {
@@ -35,6 +35,10 @@ const Routes = () => {
         {
           path: "/", // This is the landing page for authenticated users
           element: <Dashboard />,
+        },
+        {
+          path: "/kuku", // This is the landing page for authenticated users
+          element: <div>Kuku</div>,
         },
         {
           path: "/logout",

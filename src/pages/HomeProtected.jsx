@@ -1,11 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
+// import { Link } from "react-router-dom";
+
 import {
   Bars3Icon,
   XMarkIcon,
   ArrowPathIcon,
   ChatBubbleLeftRightIcon,
+  HeartIcon,
+  CommandLineIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -31,6 +35,11 @@ const features = [
 
 export default function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const refresh = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  };
   return (
     <>
       <div className="bg-white">
@@ -123,6 +132,52 @@ export default function Dashboard() {
             </Dialog.Panel>
           </Dialog>
         </header>
+      </div>
+      <div class="px-20 py-20 m-auto">
+        <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200">
+          <details className="group p-4" open>
+            <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
+              How do I know what comes next?
+              <div className="flex p-2">
+                <div className="pr-2 flex">
+                  <HeartIcon className="h-5 w-5" />
+                </div>
+                <div className="pr-2 flex text items-center">
+                  <p>aaaa</p>
+                </div>
+                <div>
+                  <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                </div>
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute right-0 top-1 h-4 w-4 shrink-0 stroke-slate-700 transition duration-300 group-open:rotate-45"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-labelledby="title-ac13 desc-ac13"
+              >
+                <title id="title-ac13">Open icon</title>
+                <desc id="desc-ac13">
+                  icon that represents the state of the summary
+                </desc>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </summary>
+            <p className="mt-4 text-slate-500">
+              Whenever the team is brewing something new, you will be able to
+              find it, grayed out, on the main component page as well as the
+              websites side navigation. The new component name will be there
+              with a "coming next" badge.
+            </p>
+            <div className="row"></div>
+          </details>
+        </section>
       </div>
     </>
   );

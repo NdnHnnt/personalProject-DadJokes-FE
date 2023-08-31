@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
+import { useAuth } from "../provider/authProvider";
+import axios from "axios";
 // import { Link } from "react-router-dom";
 
 import {
@@ -18,28 +20,30 @@ const navigation = [
   { name: "How?", href: "#" },
 ];
 
-const features = [
-  {
-    name: "Tukar Candaan",
-    description:
-      "DadJokes menyediakan pengguna untuk saling memposting jokes mereka dan menghibur orang lain!",
-    icon: ArrowPathIcon,
-  },
-  {
-    name: "Beri Reaksi pada Candaan",
-    description:
-      "Beri reaksi dan suarakan pendapatmu terkait jokes tertentu secara bebas!",
-    icon: ChatBubbleLeftRightIcon,
-  },
-];
-
-export default function Dashboard() {
+const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const refresh = () => {
-    setTimeout(() => {
-      window.location.reload();
-    }, 2000);
+  const [response, setResponse] = useState(null); // Changed to setResponse
+  const { token } = useAuth();
+
+  const fetchData = async () => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: "http://localhost:3000/jokes/",
+      headers: { Authorization: `Bearer ${token}`},
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log('success')
+      setResponse(response.data); // Using setResponse to update state
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  fetchData();
+
   return (
     <>
       <div className="bg-white">
@@ -133,7 +137,7 @@ export default function Dashboard() {
           </Dialog>
         </header>
       </div>
-      <div class="px-20 py-20 m-auto">
+      <div className="px-20 py-20 m-auto">
         <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200">
           <details className="group p-4" open>
             <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
@@ -181,4 +185,6 @@ export default function Dashboard() {
       </div>
     </>
   );
-}
+};
+
+export default Dashboard;

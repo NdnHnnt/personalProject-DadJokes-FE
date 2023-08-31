@@ -42,7 +42,6 @@ const SignIn = () => {
 
     try {
       const response = await axios.request(config);
-      console.log(response.data);
       setResponse(response.data);
       setSuccessAlert(true);
       setErrorAlert(false);

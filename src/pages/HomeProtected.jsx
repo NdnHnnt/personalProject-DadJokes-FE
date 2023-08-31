@@ -31,7 +31,7 @@ const Dashboard = () => {
       method: "get",
       maxBodyLength: Infinity,
       url: "http://localhost:3000/jokes/",
-      headers: { Authorization: `Bearer ${token}`},
+      headers: { Authorization: `Bearer ${token}` },
     };
 
     try {
@@ -44,7 +44,6 @@ const Dashboard = () => {
   };
 
   fetchData();
-  // console.log(response)
 
   return (
     <>
@@ -141,52 +140,57 @@ const Dashboard = () => {
       </div>
 
       <div className="px-20 py-20 m-auto">
-        {response && response.data.map((item) => (
-        <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200" key={item.jokes_id}>
-          <details className="group p-4" close>
-            <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
-              {item.jokes_question}
-              <div className="flex p-2 items-center">
-                <div className="flex">
-                  <HeartIcon className="h-5 w-5" />
-                </div>
-                <div className="pr-2 flex text">
-                  <p>{item.like_count}</p>
-                </div>
-                <div>
-                  <ChatBubbleLeftRightIcon className="h-5 w-5" />
-                </div>
-                <div className="pr-2 flex text">
-                  <p>{item.comment_count}</p>
-                </div>
-              </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute right-0 top-1 h-4 w-4 shrink-0 stroke-slate-700 transition duration-300 group-open:rotate-45"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                aria-labelledby="title-ac13 desc-ac13"
-              >
-                <title id="title-ac13">Open icon</title>
-                <desc id="desc-ac13">
-                  icon that represents the state of the summary
-                </desc>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </summary>
-            <p className="mt-4 text-slate-500">
-            {item.jokes_answer}
-            </p>
-            <div className="row"></div>
-          </details>
-        </section>
-))}
+        {response &&
+          response.data.map((item) => (
+            <section
+              className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200"
+              key={item.jokes_id}
+            >
+              <details className="group p-4">
+                <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
+                  {item.jokes_question}
+                  <div className="flex p-2 items-center">
+                    <div className="flex">
+                      <HeartIcon className="h-5 w-5" />
+                    </div>
+                    <div className="pr-2 flex">
+                      <p>{item.like_count}</p>
+                    </div>
+                    <div>
+                      <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                    </div>
+                    <div className="pr-2 flex">
+                      <p>{item.comment_count}</p>
+                    </div>
+                    <div className="flex">
+                      <a className="btn btn-darkblue p-1">Button</a>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute right-0 top-1 h-4 w-4 shrink-0 stroke-slate-700 transition duration-300 group-open:rotate-45"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    aria-labelledby="title-ac13 desc-ac13"
+                  >
+                    <title id="title-ac13">Open icon</title>
+                    <desc id="desc-ac13">
+                      icon that represents the state of the summary
+                    </desc>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-slate-500">{item.jokes_answer}</p>
+                <div className="row"></div>
+              </details>
+            </section>
+          ))}
       </div>
     </>
   );

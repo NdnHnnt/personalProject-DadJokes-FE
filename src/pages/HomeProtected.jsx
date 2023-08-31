@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
@@ -35,14 +36,15 @@ const Dashboard = () => {
 
     try {
       const response = await axios.request(config);
-      console.log('success')
-      setResponse(response.data); // Using setResponse to update state
+      setResponse(response.data);
+      // console.log(response.data)
     } catch (error) {
       console.log(error);
     }
   };
 
   fetchData();
+  // console.log(response)
 
   return (
     <>
@@ -137,20 +139,25 @@ const Dashboard = () => {
           </Dialog>
         </header>
       </div>
+
       <div className="px-20 py-20 m-auto">
-        <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200">
-          <details className="group p-4" open>
+        {response && response.data.map((item) => (
+        <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200" key={item.jokes_id}>
+          <details className="group p-4" close>
             <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
-              How do I know what comes next?
-              <div className="flex p-2">
-                <div className="pr-2 flex">
+              {item.jokes_question}
+              <div className="flex p-2 items-center">
+                <div className="flex">
                   <HeartIcon className="h-5 w-5" />
                 </div>
-                <div className="pr-2 flex text items-center">
-                  <p>aaaa</p>
+                <div className="pr-2 flex text">
+                  <p>{item.like_count}</p>
                 </div>
                 <div>
                   <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                </div>
+                <div className="pr-2 flex text">
+                  <p>{item.comment_count}</p>
                 </div>
               </div>
               <svg
@@ -174,14 +181,12 @@ const Dashboard = () => {
               </svg>
             </summary>
             <p className="mt-4 text-slate-500">
-              Whenever the team is brewing something new, you will be able to
-              find it, grayed out, on the main component page as well as the
-              websites side navigation. The new component name will be there
-              with a "coming next" badge.
+            {item.jokes_answer}
             </p>
             <div className="row"></div>
           </details>
         </section>
+))}
       </div>
     </>
   );

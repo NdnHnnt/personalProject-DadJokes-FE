@@ -115,15 +115,6 @@ const SignIn = () => {
               />
             </div>
             <div className="flex">
-              {/* <div className="w-1/2">
-                <input type="checkbox" name="remeberMe" />
-                <label htmlFor="remeberMe">Rember me</label>
-              </div> */}
-              {/* <div className="w-1/2">
-                <a className="font-bold text-blue-600" href="">
-                  Forgot password ?
-                </a>
-              </div> */}
             </div>
             <div>
               <input

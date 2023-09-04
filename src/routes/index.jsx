@@ -6,6 +6,7 @@ import Logout from "../pages/FormLogout";
 import LandingPage from "../pages/LandingPage";
 import Dashboard from "../pages/HomeProtected";
 import SignUp from "../pages/FormSignUp";
+import JokeSpecific from "../pages/HomeJokeSpec";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -37,8 +38,8 @@ const Routes = () => {
           element: <Dashboard />,
         },
         {
-          path: "/kuku", // This is the landing page for authenticated users
-          element: <div>Kuku</div>,
+          path: "/:jokeId", // This is the landing page for authenticated users
+          element: <JokeSpecific />,
         },
         {
           path: "/logout",

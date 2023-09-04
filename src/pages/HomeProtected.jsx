@@ -1,15 +1,14 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { useAuth } from "../provider/authProvider";
 import axios from "axios";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import {
   Bars3Icon,
   XMarkIcon,
-  ArrowPathIcon,
   ChatBubbleLeftRightIcon,
   HeartIcon,
   UserIcon,
@@ -25,9 +24,15 @@ const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [response, setResponse] = useState(null); // Changed to setResponse
   const [response1, setResponse1] = useState(null);
+  const [response2, setResponse2] = useState(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const { token } = useAuth();
+
+  const handleClear = () => {
+    setQuestion('');
+    setAnswer('');
+  };
 
   const fetchData = async () => {
     let config = {
@@ -40,20 +45,36 @@ const Dashboard = () => {
     try {
       const response = await axios.request(config);
       setResponse(response.data);
-      // console.log(response.data)
     } catch (error) {
       console.log(error);
     }
   };
 
+  // const handleLike = async () => {
+  //   //unfunctional and uncalled
+  //   let config = {
+  //     method: "get",
+  //     maxBodyLength: Infinity,
+  //     url: `http://localhost:3000/jokes/${item.jokes_id}`,
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   };
+
+  //   try {
+  //     const response2 = await axios.request(config);
+  //     setResponse2(response.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const handlePost = async (e) => {
     e.preventDefault();
-
+  
     let data = JSON.stringify({
       question: question,
-      asnwer: answer,
+      answer: answer,
     });
-
+  
     let config = {
       method: "post",
       maxBodyLength: Infinity,
@@ -64,17 +85,21 @@ const Dashboard = () => {
       },
       data: data,
     };
-
+  
     try {
       const response1 = await axios.request(config);
       setResponse1(response1.data);
+      fetchData();
     } catch (error) {
       console.log(error);
       setResponse1(error.response.data);
     }
   };
 
-  fetchData();
+  useEffect(() => {
+    fetchData(); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -174,7 +199,7 @@ const Dashboard = () => {
         <section className="w-full divide-y divide-slate-200 rounded bg-white shadow-md shadow-slate-200">
           <details className="group p-4">
             <summary className="relative cursor-pointer list-none pr-8 font-medium text-slate-700 transition-colors duration-300 focus-visible:outline-none group-hover:text-slate-900  [&::-webkit-details-marker]:hidden">
-              <div class="relative my-6">
+              <div className="relative my-6">
                 <input
                   id="id-b02"
                   type="text"
@@ -182,17 +207,17 @@ const Dashboard = () => {
                   placeholder="Pertanyaan Anda"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  class="relative w-full h-10 px-4 text-sm placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                  className="relative w-full h-10 px-4 text-sm placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                   required
                 />
                 <label
-                  for="id-b02"
-                  class="cursor-text peer-focus:cursor-default absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent"
+                  htmlFor="id-b02"
+                  className="cursor-text peer-focus:cursor-default absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent"
                 >
                   Posting pertanyaan bapak-bapak milik Anda!
                 </label>
               </div>
-              <div class="relative my-6">
+              <div className="relative my-6">
                 <input
                   id="id-b02"
                   type="text"
@@ -200,21 +225,22 @@ const Dashboard = () => {
                   placeholder="Jawaban Anda"
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  class="relative w-full h-10 px-4 text-sm placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                  className="relative w-full h-10 px-4 text-sm placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                   required
                 />
                 <label
-                  for="id-b02"
-                  class="cursor-text peer-focus:cursor-default absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent"
+                  htmlFor="id-b02"
+                  className="cursor-text peer-focus:cursor-default absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent"
                 >
                   Beri jawaban atas pertanyaan apak-bapak Anda!
                 </label>
               </div>
-              <div> 
-                
+              <div className="flex">
+                <button className="btn bg-turqoise" onClick={handlePost}>Submit</button>
+
+                <button className="btn bg-red" onClick={handleClear}>Clear</button>
               </div>
             </summary>
-            <div className="row"></div>
           </details>
         </section>
       </div>
@@ -243,7 +269,7 @@ const Dashboard = () => {
                       <p>{item.comment_count}</p>
                     </div>
                     <div className="flex">
-                      <a className="btn btn-darkblue p-1">Button</a>
+                      <Link to={`/${item.jokes_id}`} className="btn bg-orange">See More</Link>
                     </div>
                     <div className=" items-center hidden lg:flex lg:flex-1 lg:justify-end">
                       <p>{item.author}</p>

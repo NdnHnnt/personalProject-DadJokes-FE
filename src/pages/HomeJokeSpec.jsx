@@ -6,14 +6,20 @@ import { useAuth } from "../provider/authProvider";
 export default function JokeSpecific() {
   const { token } = useAuth();
   const [response, setResponse] = useState(null);
+  const [response1, setResponse1] = useState(null);
   const [jokeId, setJokeId] = useState(null);
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
     const pathname = window.location.pathname;
     const parts = pathname.split("/");
-    const extractedJokeId = parts[parts.length - 1];
+    const extractedJokeId = parts[1];
     setJokeId(extractedJokeId);
   }, []);
+
+  const handleClear = () => {
+    setComment("");
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDataSpecific = async (jokeId) => {
@@ -32,6 +38,36 @@ export default function JokeSpecific() {
     }
   };
 
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (!comment) {
+      console.log("Comment is empty or null. Please enter a comment.");
+      return;
+    }
+  
+    let data = JSON.stringify({
+      comment: comment,
+    });
+  
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://localhost:3000/jokes/${jokeId}/comment`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+    try {
+      const response1 = await axios.request(config);
+      setResponse1(response1.data);
+    } catch (error) {
+      console.log(error);
+      setResponse1(error.response.data);
+    }
+  };
+  
   useEffect(() => {
     if (jokeId) {
       fetchDataSpecific(jokeId);
@@ -123,8 +159,8 @@ export default function JokeSpecific() {
                           type="text"
                           name="id-b02"
                           placeholder="Pertanyaan Anda"
-                          // value={question}
-                          // onChange={(e) => setQuestion(e.target.value)}
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
                           className="relative w-full h-10 px-4 text-sm placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                           required
                         />
@@ -138,14 +174,11 @@ export default function JokeSpecific() {
                       <div className="flex">
                         <button
                           className="btn bg-turqoise"
-                          // onClick={}
+                          onClick={handleComment}
                         >
                           Submit
                         </button>
-                        <button
-                          className="btn bg-red"
-                          // onClick={handleClear}
-                        >
+                        <button className="btn bg-red" onClick={handleClear}>
                           Clear
                         </button>
                       </div>

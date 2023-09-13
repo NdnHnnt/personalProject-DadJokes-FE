@@ -75,7 +75,7 @@ const Routes = () => {
   }
   const router = createBrowserRouter(authenticatedRoutes);
 
-  console.log(token); // This should be placed outside the function call
+  console.log(token);
 
   // Provide the router configuration using RouterProvider
   return <RouterProvider router={router} />;

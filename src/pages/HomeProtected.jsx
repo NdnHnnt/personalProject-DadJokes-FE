@@ -7,12 +7,14 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 import {
+  HeartIcon as HeartOutline,
   Bars3Icon,
   XMarkIcon,
-  ChatBubbleLeftRightIcon,
-  HeartIcon,
   UserIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
+
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
 const navigation = [
   { name: "What is DadJokes?", href: "#" },
@@ -22,16 +24,16 @@ const navigation = [
 
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
   const [response, setResponse] = useState(null); // Changed to setResponse
   const [response1, setResponse1] = useState(null);
-  const [response2, setResponse2] = useState(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const { token } = useAuth();
 
   const handleClear = () => {
-    setQuestion('');
-    setAnswer('');
+    setQuestion("");
+    setAnswer("");
   };
 
   const fetchData = async () => {
@@ -50,31 +52,14 @@ const Dashboard = () => {
     }
   };
 
-  // const handleLike = async () => {
-  //   //unfunctional and uncalled
-  //   let config = {
-  //     method: "get",
-  //     maxBodyLength: Infinity,
-  //     url: `http://localhost:3000/jokes/${item.jokes_id}`,
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   };
-
-  //   try {
-  //     const response2 = await axios.request(config);
-  //     setResponse2(response.data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const handlePost = async (e) => {
     e.preventDefault();
-  
+
     let data = JSON.stringify({
       question: question,
       answer: answer,
     });
-  
+
     let config = {
       method: "post",
       maxBodyLength: Infinity,
@@ -85,7 +70,7 @@ const Dashboard = () => {
       },
       data: data,
     };
-  
+
     try {
       const response1 = await axios.request(config);
       setResponse1(response1.data);
@@ -96,9 +81,36 @@ const Dashboard = () => {
     }
   };
 
+  const handleLike = async (jokeId) => {
+    console.log(jokeId);
+    if (isRequesting) {
+      return;
+    }
+    setIsRequesting(true);
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://localhost:3000/jokes/${jokeId}/like`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      const response1 = await axios.request(config);
+      setResponse1(response1.data);
+      fetchData();
+    } catch (error) {
+      console.log(error);
+      setResponse1(error.response.data);
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
   useEffect(() => {
-    fetchData(); 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -236,9 +248,13 @@ const Dashboard = () => {
                 </label>
               </div>
               <div className="flex">
-                <button className="btn bg-turqoise" onClick={handlePost}>Submit</button>
+                <button className="btn bg-turqoise" onClick={handlePost}>
+                  Submit
+                </button>
 
-                <button className="btn bg-red" onClick={handleClear}>Clear</button>
+                <button className="btn bg-red" onClick={handleClear}>
+                  Clear
+                </button>
               </div>
             </summary>
           </details>
@@ -257,19 +273,33 @@ const Dashboard = () => {
                   {item.jokes_question}
                   <div className="flex p-2 items-center">
                     <div className="flex">
-                      <HeartIcon className="h-5 w-5" />
+                      <button
+                        className="btn bg-red"
+                        onClick={() => handleLike(item.jokes_id)}
+                      >
+                        <HeartSolid
+                          className={`h-6 w-6 ${
+                            item.is_liked === 1 ? "" : "hidden"
+                          }`}
+                        />
+                        <HeartOutline
+                          className={`h-6 w-6 ${
+                            item.is_liked === 0 ? "" : "hidden"
+                          }`}
+                        />
+                        {item.like_count}
+                      </button>
                     </div>
-                    <div className="pr-2 flex">
-                      <p>{item.like_count}</p>
-                    </div>
-                    <div>
-                      <ChatBubbleLeftRightIcon className="h-5 w-5" />
-                    </div>
-                    <div className="pr-2 flex">
-                      <p>{item.comment_count}</p>
+                    <div className="px-2 flex">
+                      <Link to={`/${item.jokes_id}`} className="btn bg-yellow disabled">
+                        <ChatBubbleLeftRightIcon className="h-7 w-7" />
+                        <p>{item.comment_count}</p>
+                      </Link>
                     </div>
                     <div className="flex">
-                      <Link to={`/${item.jokes_id}`} className="btn bg-orange">See More</Link>
+                      <Link to={`/${item.jokes_id}`} className="btn bg-turqoise">
+                        See More
+                      </Link>
                     </div>
                     <div className=" items-center hidden lg:flex lg:flex-1 lg:justify-end">
                       <p>{item.author}</p>

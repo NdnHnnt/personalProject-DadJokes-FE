@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { useAuth } from "../provider/authProvider";
 import axios from "axios";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 import {
   HeartIcon as HeartOutline,
   Bars3Icon,
@@ -13,14 +12,9 @@ import {
   UserIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
-
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
-const navigation = [
-  { name: "What is DadJokes?", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "How?", href: "#" },
-];
+const navigation = [{ name: "Welcome to DadJokes!", href: "#" }];
 
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -150,10 +144,10 @@ const Dashboard = () => {
             </div>
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
               <a
-                href="#"
+                href="/logout"
                 className="text-sm font-semibold leading-6 text-gray-900"
               >
-                Log in <span aria-hidden="true">&rarr;</span>
+                Log Out <span aria-hidden="true">&rarr;</span>
               </a>
             </div>
           </nav>
@@ -194,10 +188,10 @@ const Dashboard = () => {
                   </div>
                   <div className="py-6">
                     <a
-                      href="#"
+                      href="/logout"
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
-                      Log in
+                      Log Out
                     </a>
                   </div>
                 </div>
@@ -291,13 +285,19 @@ const Dashboard = () => {
                       </button>
                     </div>
                     <div className="px-2 flex">
-                      <Link to={`/${item.jokes_id}`} className="btn bg-yellow disabled">
+                      <Link
+                        to={`/${item.jokes_id}`}
+                        className="btn bg-yellow disabled"
+                      >
                         <ChatBubbleLeftRightIcon className="h-7 w-7" />
                         <p>{item.comment_count}</p>
                       </Link>
                     </div>
                     <div className="flex">
-                      <Link to={`/${item.jokes_id}`} className="btn bg-turqoise">
+                      <Link
+                        to={`/${item.jokes_id}`}
+                        className="btn bg-turqoise"
+                      >
                         See More
                       </Link>
                     </div>

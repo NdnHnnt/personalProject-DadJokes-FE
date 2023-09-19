@@ -22,6 +22,7 @@ const SignIn = () => {
       return () => clearTimeout(timer);
     }
   }, [successAlert, errorAlert]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 

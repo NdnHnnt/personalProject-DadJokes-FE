@@ -19,8 +19,10 @@ const navigation = [{ name: "Welcome to DadJokes!", href: "#" }];
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
-  const [response, setResponse] = useState(null); // Changed to setResponse
-  const [response1, setResponse1] = useState(null);
+  const [response, setResponse] = useState(null);
+  const [responsePop, setResponsePop] = useState(null);
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const { token } = useAuth();
@@ -30,6 +32,17 @@ const Dashboard = () => {
     setAnswer("");
   };
 
+  useEffect(() => {
+    if (successAlert || errorAlert) {
+      const timer = setTimeout(() => {
+        setSuccessAlert(false);
+        setErrorAlert(false);
+        setResponsePop(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successAlert, errorAlert]);
+  
   const fetchData = async () => {
     let config = {
       method: "get",
@@ -43,6 +56,9 @@ const Dashboard = () => {
       setResponse(response.data);
     } catch (error) {
       console.log(error);
+      setSuccessAlert(false);
+      setErrorAlert(true);
+      window.location.href = "/logout";
     }
   };
 
@@ -66,17 +82,19 @@ const Dashboard = () => {
     };
 
     try {
-      const response1 = await axios.request(config);
-      setResponse1(response1.data);
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
       fetchData();
     } catch (error) {
-      console.log(error);
-      setResponse1(error.response.data);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
     }
   };
 
   const handleLike = async (jokeId) => {
-    console.log(jokeId);
     if (isRequesting) {
       return;
     }
@@ -91,12 +109,15 @@ const Dashboard = () => {
     };
 
     try {
-      const response1 = await axios.request(config);
-      setResponse1(response1.data);
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
       fetchData();
     } catch (error) {
-      console.log(error);
-      setResponse1(error.response.data);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
     } finally {
       setIsRequesting(false);
     }
@@ -199,6 +220,17 @@ const Dashboard = () => {
             </Dialog.Panel>
           </Dialog>
         </header>
+      </div>
+
+      <div className="toast toast-top toast-center z-50">
+        <div
+          className={`alert alert-info bg-red ${errorAlert ? "" : "hidden"}`}
+        >
+          <span>{responsePop && responsePop.msg}</span>
+        </div>
+        <div className={`alert alert-success ${successAlert ? "" : "hidden"}`}>
+          <span>{responsePop && responsePop.msg}</span>
+        </div>
       </div>
 
       <div className="pt-20 px-20 m-auto">

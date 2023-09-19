@@ -74,7 +74,6 @@ const Routes = () => {
     authenticatedRoutes = routesForPublic.concat(routesForNotAuthenticatedOnly);
   }
   const router = createBrowserRouter(authenticatedRoutes);
-
   console.log(token);
 
   // Provide the router configuration using RouterProvider

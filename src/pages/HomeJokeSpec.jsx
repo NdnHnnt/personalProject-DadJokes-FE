@@ -2,26 +2,28 @@
 import axios from "axios";
 import { Dialog } from "@headlessui/react";
 import React, { useState, useEffect } from "react";
+import { redirect } from "react-router-dom";
 import { useAuth } from "../provider/authProvider";
 import {
   HeartIcon as HeartOutline,
   ChatBubbleLeftRightIcon,
   Bars3Icon,
   XMarkIcon,
+  TrashIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
-
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
-const navigation = [{ name: "Specific Jokes", href: "#" }];
+const navigation = [{ name: "Home", href: "/" }];
 
 export default function JokeSpecific() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { token } = useAuth();
   const [isRequesting, setIsRequesting] = useState(false);
   const [response, setResponse] = useState(null);
-  const [response1, setResponse1] = useState(null);
-  const [response2, setResponse2] = useState(null);
-  const [response3, setResponse3] = useState(null);
+  const [responsePop, setResponsePop] = useState(null);
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
   const [jokeId, setJokeId] = useState(null);
   const [comment, setComment] = useState("");
 
@@ -30,8 +32,18 @@ export default function JokeSpecific() {
     const parts = pathname.split("/");
     const jokeId = parts[1];
     setJokeId(jokeId);
-    console.log(jokeId);
   }, []);
+
+  useEffect(() => {
+    if (successAlert || errorAlert) {
+      const timer = setTimeout(() => {
+        setSuccessAlert(false);
+        setErrorAlert(false);
+        setResponsePop(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successAlert, errorAlert]);
 
   const handleClear = () => {
     setComment("");
@@ -72,11 +84,72 @@ export default function JokeSpecific() {
     };
 
     try {
-      const response1 = await axios.request(config);
-      setResponse1(response1.data);
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
     } catch (error) {
       console.log(error);
-      setResponse1(error.response.data);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
+  const handleDeleteJoke = async (e) => {
+    if (isRequesting) {
+      return; // Prevent multiple requests
+    }
+    setIsRequesting(true);
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `http://localhost:3000/jokes/${jokeId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
+    } catch (error) {
+      console.log(error);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
+    } finally {
+      setIsRequesting(false);
+      window.location.href = "/";
+    }
+  };
+
+  const handleDeleteComment = async (e, commentId) => {
+    if (isRequesting) {
+      return;
+    }
+    setIsRequesting(true);
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `http://localhost:3000/jokes/${jokeId}/comment/${commentId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
+    } catch (error) {
+      console.log(error);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
     } finally {
       setIsRequesting(false);
     }
@@ -88,11 +161,9 @@ export default function JokeSpecific() {
       console.log("Comment is empty or null. Please enter a comment.");
       return;
     }
-
     let data = JSON.stringify({
       comment: comment,
     });
-
     let config = {
       method: "post",
       maxBodyLength: Infinity,
@@ -104,11 +175,15 @@ export default function JokeSpecific() {
       data: data,
     };
     try {
-      const response1 = await axios.request(config);
-      setResponse3(response1.data);
+      const responsePop = await axios.request(config);
+      setResponsePop(responsePop.data);
+      setSuccessAlert(true);
+      setErrorAlert(false);
     } catch (error) {
       console.log(error);
-      setResponse3(error.response.data);
+      setResponsePop(error.response.data);
+      setSuccessAlert(false);
+      setErrorAlert(true);
     }
   };
 
@@ -211,14 +286,23 @@ export default function JokeSpecific() {
           </Dialog>
         </header>
       </div>
-
+      <div className="toast toast-top toast-center z-50">
+        <div
+          className={`alert alert-info bg-red ${errorAlert ? "" : "hidden"}`}
+        >
+          <span>{responsePop && responsePop.msg}</span>
+        </div>
+        <div className={`alert alert-success ${successAlert ? "" : "hidden"}`}>
+          <span>{responsePop && responsePop.msg}</span>
+        </div>
+      </div>
       <div className="pt-24 px-8">
         {response &&
           response.data.map((item) => (
             <div key={jokeId}>
               <div className="flex items-center gap-4">
                 <div className="rounded-full w-12 h-12 bg-black overflow-hidden">
-                  <img src="https://rairaksa.github.io/assets/img/rai.jpg" />
+                  <UserIcon/>
                 </div>
                 <div className="flex flex-col tracking-wider">
                   <label className="text-gray-600 font-bold text-base">
@@ -256,9 +340,18 @@ export default function JokeSpecific() {
                   </button>
                 </div>
                 <div className="flex pr-2">
-                  <button className="btn bg-blue">
+                  <button className="btn bg-yellow">
                     <ChatBubbleLeftRightIcon className="h-7 w-7" />
                     <p>{item.comment_count}</p>
+                  </button>
+                </div>
+                <div className="flex pr-2">
+                  <button
+                    className={`btn ${item.is_author === 1 ? "" : "hidden"}`}
+                    onClick={handleDeleteJoke}
+                  >
+                    <TrashIcon className="h-6 w-6" />
+                    <p>Delete</p>
                   </button>
                 </div>
               </div>
@@ -286,21 +379,35 @@ export default function JokeSpecific() {
                         key={commentItem.comment_id}
                       >
                         <div className="flex flex-col flex-1 ">
-                          <h4 className="flex flex-col items-start text-lg font-medium leading-8 text-slate-700 md:flex-row lg:items-center">
-                            <span className="flex-1">
-                              {commentItem.username}
-                              <span className="text-base font-normal text-slate-500">
-                                {" "}
-                                commented
+                          <div className="flex flex-col flex-1">
+                            <h4 className="flex flex-col items-start text-lg font-medium leading-8 text-slate-700 md:flex-row lg:items-center">
+                              <span className="flex-1">
+                                {commentItem.username}
+                                <span className="text-base font-normal text-slate-500">
+                                  {" "}
+                                  commented
+                                </span>
                               </span>
-                            </span>
-                            <span className="text-sm font-normal text-slate-400">
-                              {commentItem.timestamp}
-                            </span>
-                          </h4>
-                          <p className=" text-slate-500">
-                            {commentItem.comment}
-                          </p>
+                              <span className="text-sm font-normal text-slate-400">
+                                {commentItem.timestamp}
+                              </span>
+                            </h4>
+                            <div className="flex flex-col items-center text-lg font-medium md:flex-row lg:items-center">
+                              <p className="text-slate-500 flex-1">
+                                {commentItem.comment}
+                              </p>
+                              <button
+                                className={`btn bg-white ${
+                                  commentItem.is_author === 1 ? "" : "hidden"
+                                }`}
+                                onClick={(e) =>
+                                  handleDeleteComment(e, commentItem.comment_id)
+                                }
+                              >
+                                <TrashIcon className="h-6 w-6" />
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </li>
                     ))}
